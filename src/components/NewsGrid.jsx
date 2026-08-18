@@ -11,7 +11,7 @@ export default function NewsGrid({ category, news }) {
     const diffHours = (now - newsDate) / (1000 * 60 * 60);
 
     if (category === "Գլխավոր") {
-      return diffHours <= 24;
+      return diffHours <= 72;
     }
 
     return (

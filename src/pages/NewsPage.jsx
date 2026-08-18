@@ -58,7 +58,9 @@ export default function NewsPage({ news }) {
 
       <br />
 
-      <p>{article.data}</p>
+      <div className="text-gray-800 leading-7 whitespace-pre-line">
+        {article.data}
+      </div>
     </div>
 
     {/* GRID ПОД СТАТЬЁЙ */}

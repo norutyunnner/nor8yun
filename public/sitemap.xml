@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <url>
-    <loc>https://nor8yun.armenian.workers.dev/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-
+<url><loc>https://nor8yun.armenian.workers.dev/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787595999180</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787595009440</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787594935203</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787594813865</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787594336310</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787594098172</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787083561028</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787083399413</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787083073818</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787082909328</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787082686066</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787081830338</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787073179283</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787072284345</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://nor8yun.armenian.workers.dev/news/1787071512752</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>

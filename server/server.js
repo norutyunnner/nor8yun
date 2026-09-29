@@ -191,7 +191,7 @@ app.get("/weather", async (req, res) => {
 app.get("/sitemap.xml", (req, res) => {
   const news = getNews();
 
-  const baseUrl = "https://nor8yun.armenian.workers.dev";
+  const baseUrl = "https://nor8yun.am";
 
   const urls = [
     `

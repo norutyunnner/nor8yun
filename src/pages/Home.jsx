@@ -132,8 +132,8 @@ useEffect(() => {
       <Footer />
 
       <FloatingAd 
-        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1Ih5M4F2rStsazMh_GQTQ8GONLPNH242ufg&s" 
-        link="https://example.com" 
+        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQordvvwsj4X5ZEvvQpeScQOH9v7XepD0UVYcY9hwXJ4w&s=10" 
+        link="https://araplhn.org/4/e3878782693e89146c843591051f5c95" 
         delay={5000}
       />
     </div>

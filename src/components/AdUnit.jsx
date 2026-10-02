@@ -79,6 +79,11 @@ export default function AdUnit({ placement }) {
           <div 
             ref={topAdRef}
             className="min-w-[728px] min-h-[90px] flex justify-center items-center mx-auto"
+            style={{ 
+              height: '90px', 
+              maxHeight: '95px', 
+              overflow: 'hidden' 
+            }} 
           />
         </div>
       </div>
@@ -92,7 +97,12 @@ export default function AdUnit({ placement }) {
         <div 
           ref={homeMainRef}
           className="w-full max-w-[468px] min-h-[60px] overflow-hidden flex justify-center items-center"
-        />
+           style={{ 
+              height: '60px', 
+              maxHeight: '65px', 
+              overflow: 'hidden' 
+            }} 
+       />
       </div>
     );
   }

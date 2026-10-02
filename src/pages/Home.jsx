@@ -91,7 +91,7 @@ useEffect(() => {
       <FullScreenAd />
 
       <Header setActiveCategory={setActiveCategory} />
-           <AdUnit placement="top-own" />
+           <AdUnit placement="top-adsterra" />
       {heroNews && (
         <HeroNews
           id={heroNews.id}

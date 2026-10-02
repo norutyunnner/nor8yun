@@ -80,6 +80,7 @@ const deleteNews = async (id) => {
     image,
     category,
     data,
+    date: new Date().toISOString(),
   };
 
   if (videoType === "youtube") {

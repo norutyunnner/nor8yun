@@ -86,7 +86,7 @@ localStorage.removeItem("ad_click_timestamp");
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-49">
+    <div className="fixed inset-0 bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-[60]">
       <div className="bg-white rounded-xl p-6 max-w-md w-full relative shadow-xl">
 
         <button
@@ -97,8 +97,12 @@ localStorage.removeItem("ad_click_timestamp");
         </button>
 
         <h2 className="text-xl font-bold mb-3 text-center">
+       !!! Հարգելի՛ հաճախորդ !!!
         </h2>
 
+        <p className="text-gray-700 text-center">
+       Մեր կայքի գովազդային բոլոր փաթեթները ձեռք են բերվում adsterra.com կայքից։ 
+       Խարդախություններից և անարդարություններից զերծ մնալու համար խնդրում ենք երբեք չտրամադրել Ձեր անձնական կամ բանկային քարտի տվյալները անհայտ անձանց։</p>
         <div
           id="adsterra-container"
           className="flex justify-center mb-4 overflow-hidden"
@@ -107,9 +111,7 @@ localStorage.removeItem("ad_click_timestamp");
             width: "100%",
           }}
         ></div>
-
-        <p className="text-gray-700 text-center">
-        </p>
+            <p className="text-gray-700 text-center">Սիրով՝ nor8yun.am լրատվական։</p>
 
       </div>
     </div>

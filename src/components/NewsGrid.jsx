@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { getRealCategory } from "../utils/getRealCategory";
-import AdUnit from "./AdUnit";
 
 export default function NewsGrid({ category, news }) {
 
@@ -29,7 +28,6 @@ export default function NewsGrid({ category, news }) {
  ) : (
    filteredNews.map((item) => (
    <div key={item.id} className="bg-white p-4 rounded shadow hover:shadow-md">
-   <AdUnit />
     <Link to={`/news/${item.id}`}
     className="block hover:opacity-90 transition"
   >

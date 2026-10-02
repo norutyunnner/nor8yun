@@ -77,7 +77,7 @@ const renderTextWithLinks = (text) => {
 
         {(index + 1) % 5 === 0 && index + 1 < paragraphs.length && (
           <div className="my-6">
-            <AdUnit />
+            <AdUnit placement="top-own" />
           </div>
         )}
       </div>

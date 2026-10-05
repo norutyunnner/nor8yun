@@ -52,7 +52,7 @@ export default function AdUnit({ placement }) {
     `;
 
     const adScript = document.createElement("script");
-    adScript.src = "https://bauval.org";
+    adScript.src = "https://bauval.org/22/ce897b6a994461a55df52af27df92859";
     adScript.async = true;
 
     homeMainRef.current.appendChild(optionsScript);
@@ -111,7 +111,7 @@ export default function AdUnit({ placement }) {
   if (placement === "top-own" || placement === "sidebar-own" || placement === "sidebar-2") {
     return (
       <div className="w-full flex justify-center my-4 px-4">
-        <img src="/my-ad.png" alt="Nor8yun" className="w-full max-w-6xl h-auto object-contain rounded" />
+        <img src="/taxi.reklam.png" alt="Nor8yun" className="w-full max-w-6xl h-auto object-contain rounded" />
       </div>
     );
   }

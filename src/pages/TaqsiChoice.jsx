@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import taxiCar from "/taxiCar.png";
 import taxiHuman from "/taxiHuman.png";
+import AccountTaxi from "../components/AccountTaxi";
+
 
 export default function TaqsiChoice() {
   const navigate = useNavigate();
   // Состояние активной стороны: 'left', 'right' или null
   const [activeSide, setActiveSide] = useState(null);
+  const [showAccount, setShowAccount] = useState(false);
 
   const handleSideClick = (role) => {
     if (window.innerWidth > 768) {
@@ -25,7 +28,13 @@ export default function TaqsiChoice() {
   };
 const handleNavigate = (role, event) => {
   event.stopPropagation();
-  navigate(`/Taqsi/${role}`);
+
+  if (role === "driver") {
+    setShowAccount(true);
+    return;
+  }
+
+  navigate("/Taqsi/passenger");
 };
   // 📐 Вычисление ширины створок
   const getLeftWidth = () => {
@@ -225,6 +234,15 @@ if (activeSide === "left") return "w-[10%]";
         )}
         </div>
       </div>
+      {showAccount && (
+  <AccountTaxi
+    onClose={() => setShowAccount(false)}
+    onSuccess={() => {
+      setShowAccount(false);
+      navigate("/Taqsi/driver");
+    }}
+  />
+)}
     </div>
   );
 }

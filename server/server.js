@@ -1,36 +1,29 @@
+
 import express from "express";
 import cors from "cors";
-import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-dotenv.config();
+import { createClient } from "@supabase/supabase-js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
-
-
 const apiKey = process.env.WEATHER_API_KEY;
 
 app.use(cors());
 app.use(express.json());
 
-// ===== FILE HELP =====
-const newsPath = path.resolve("./data/news.json");
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error("В настройках сервера отсутствуют ключи Supabase.");
+}
 
-const getNews = () => {
-  try {
-    const file = fs.readFileSync(newsPath, "utf-8");
-    return JSON.parse(file || "[]");
-  } catch (err) {
-    console.log("NEWS READ ERROR:", err);
-    return [];
-  }
-};
-
-
-const saveNews = (data) => {
-  fs.writeFileSync(newsPath, JSON.stringify(data, null, 2));
-};
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 // ===== AUTH =====
 const auth = (req, res, next) => {
@@ -45,10 +38,21 @@ const auth = (req, res, next) => {
   try {
     jwt.verify(token, process.env.JWT_SECRET);
     next();
-  } catch (err) {
+  } catch {
     return res.status(403).json({ message: "Invalid token" });
   }
 };
+
+// ===== DATABASE HELP =====
+async function getNews() {
+  const { data, error } = await supabase
+    .from("news")
+    .select("*")
+    .order("position", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
 
 // ===== LOGIN =====
 app.post("/login", (req, res) => {
@@ -73,98 +77,195 @@ app.post("/login", (req, res) => {
 // ===== NEWS =====
 
 // GET all news
-app.get("/news", (req, res) => {
+app.get("/news", async (req, res) => {
   try {
-    res.json(getNews());
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.json(await getNews());
+  } catch (error) {
+    console.error("GET NEWS ERROR:", error.message);
+    res.status(500).json({ message: "Could not load news" });
   }
 });
 
 // GET one news
-app.get("/news/:id", (req, res) => {
+app.get("/news/:id", async (req, res) => {
   try {
-    const news = getNews();
-    const item = news.find(n => n.id === Number(req.params.id));
+    const id = Number(req.params.id);
 
-    if (!item) return res.status(404).json({ message: "Not found" });
+    if (!Number.isSafeInteger(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
 
-    res.json(item);
-  } catch {
-    res.status(500).json({ message: "Server error" });
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ message: "Not found" });
+
+    res.json(data);
+  } catch (error) {
+    console.error("GET ONE NEWS ERROR:", error.message);
+    res.status(500).json({ message: "Could not load news" });
   }
 });
 
 // CREATE news
-app.post("/news", auth, (req, res) => {
-  if (req.body.category === "Գլխավոր") {
-    return res.status(403).json({
-      message: "Creating news in 'Գլխավոր' is not allowed"
-    });
+app.post("/news", auth, async (req, res) => {
+  try {
+    if (req.body.category === "Գլխավոր") {
+      return res.status(403).json({
+        message: "Creating news in 'Գլխավոր' is not allowed"
+      });
+    }
+
+    const news = await getNews();
+
+    // Shift everything except the first (main) news down by one.
+    for (let i = 1; i < news.length; i++) {
+      const { error } = await supabase
+        .from("news")
+        .update({ position: i + 1 })
+        .eq("id", news[i].id);
+
+      if (error) throw error;
+    }
+
+    const newItem = {
+      id: Date.now(),
+      title: req.body.title ?? null,
+      description: req.body.description ?? null,
+      image: req.body.image ?? null,
+      category: req.body.category ?? null,
+      date: req.body.date ?? new Date().toISOString(),
+      video: req.body.video ?? null,
+      data: req.body.data ?? null,
+      position: news.length > 0 ? 1 : 0
+    };
+
+    const { data, error } = await supabase
+      .from("news")
+      .insert(newItem)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (error) {
+    console.error("CREATE NEWS ERROR:", error.message);
+    res.status(500).json({ message: "Could not create news" });
   }
-
-  const news = getNews();
-
-  const newItem = {
-    id: Date.now(),
-    ...req.body
-  };
-
-  const first = news[0] || null;
-  const rest = news.slice(1);
-
-  const updated = [
-    first,
-    newItem,
-    ...rest
-  ];
-
-  saveNews(updated);
-
-  res.json(newItem);
 });
 
 // DELETE news
-app.delete("/news/:id", auth, (req, res) => {
-  let news = getNews();
+app.delete("/news/:id", auth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-  const id = Number(req.params.id);
-  news = news.filter(item => item.id !== id);
+    if (!Number.isSafeInteger(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
 
-  saveNews(news);
+    const news = await getNews();
+    const current = news.find(item => item.id === id);
 
-  res.json({ message: "Deleted" });
+    if (!current) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    if (current.category === "Գլխավոր") {
+      return res.status(403).json({
+        message: "Deleting the main news is not allowed"
+      });
+    }
+
+    const { error } = await supabase
+      .from("news")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    const remaining = news.filter(item => item.id !== id);
+
+    // Restore consecutive positions after deletion.
+    for (let i = 0; i < remaining.length; i++) {
+      const { error: positionError } = await supabase
+        .from("news")
+        .update({ position: i })
+        .eq("id", remaining[i].id);
+
+      if (positionError) throw positionError;
+    }
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    console.error("DELETE NEWS ERROR:", error.message);
+    res.status(500).json({ message: "Could not delete news" });
+  }
 });
 
 // UPDATE news
-app.put("/news/:id", auth, (req, res) => {
-  let news = getNews();
+app.put("/news/:id", auth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-  const id = Number(req.params.id);
+    if (!Number.isSafeInteger(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
 
-  const currentNews = news.find(item => item.id === id);
+    const { data: current, error: findError } = await supabase
+      .from("news")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
 
-  if (!currentNews) {
-    return res.status(404).json({ message: "Not found" });
+    if (findError) throw findError;
+    if (!current) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    if (
+      current.category !== "Գլխավոր" &&
+      req.body.category === "Գլխավոր"
+    ) {
+      return res.status(403).json({
+        message: "Cannot move news to 'Գլխավոր'"
+      });
+    }
+
+    const allowedFields = [
+      "title",
+      "description",
+      "image",
+      "category",
+      "date",
+      "video",
+      "data"
+    ];
+
+    const updates = {};
+
+    for (const field of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    }
+
+    const { error: updateError } = await supabase
+      .from("news")
+      .update(updates)
+      .eq("id", id);
+
+    if (updateError) throw updateError;
+
+    res.json({ message: "Updated" });
+  } catch (error) {
+    console.error("UPDATE NEWS ERROR:", error.message);
+    res.status(500).json({ message: "Could not update news" });
   }
-
-  // Запрещаем менять категорию на "Գլխավոր"
-  if (
-    currentNews.category !== "Գլխավոր" &&
-    req.body.category === "Գլխավոր"
-  ) {
-    return res.status(403).json({
-      message: "Cannot move news to 'Գլխավոր'"
-    });
-  }
-
-  news = news.map(item =>
-    item.id === id ? { ...item, ...req.body } : item
-  );
-
-  saveNews(news);
-
-  res.json({ message: "Updated" });
 });
 
 // ===== WEATHER =====
@@ -188,35 +289,35 @@ app.get("/weather", async (req, res) => {
 });
 
 // ===== SITEMAP =====
-app.get("/sitemap.xml", (req, res) => {
-  const news = getNews();
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const news = await getNews();
+    const baseUrl = "https://nor8yun.am";
 
-  const baseUrl = "https://nor8yun.am";
+    const urls = [
+      `<url>
+        <loc>${baseUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>`,
+      ...news.map(item => `<url>
+        <loc>${baseUrl}/news/${item.id}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+      </url>`)
+    ];
 
-  const urls = [
-    `
-    <url>
-      <loc>${baseUrl}/</loc>
-      <changefreq>daily</changefreq>
-      <priority>1.0</priority>
-    </url>
-    `,
-    ...news.map(item => `
-    <url>
-      <loc>${baseUrl}/news/${item.id}</loc>
-      <changefreq>daily</changefreq>
-      <priority>0.8</priority>
-    </url>
-    `)
-  ];
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join("")}
+${urls.join("\n")}
 </urlset>`;
 
-  res.type("application/xml");
-  res.send(sitemap);
+    res.type("application/xml");
+    res.send(sitemap);
+  } catch (error) {
+    console.error("SITEMAP ERROR:", error.message);
+    res.status(500).send("Could not generate sitemap");
+  }
 });
 
 const PORT = process.env.PORT || 3000;
@@ -224,6 +325,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
-
-
-

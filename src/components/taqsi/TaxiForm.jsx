@@ -49,7 +49,7 @@ export default function TaxiForm({
         <div className="relative">
           <input
             type="number"
-            min="50"
+            min="10"
             max="200"
             value={pricePerKm}
             onChange={(e) => setPricePerKm(e.target.value)}
@@ -63,7 +63,7 @@ export default function TaxiForm({
         </div>
 
         <p className="text-xs text-gray-500 mt-1">
-          От 50 ֏ до 200 ֏ за километр
+          От 10 ֏ до 200 ֏ за километр
         </p>
       </div>
 

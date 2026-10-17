@@ -1,6 +1,8 @@
 import React from "react";
 
 export default function RideForm({
+  pickupDistance,
+  setPickupDistance,
   from,
   setFrom,
   to,
@@ -15,6 +17,8 @@ export default function RideForm({
   setPrice,
   isFemaleDriver,
   setIsFemaleDriver,
+  hasLuggageSpace,
+  setHasLuggageSpace,
 }) {
   return (
     <>
@@ -62,7 +66,7 @@ export default function RideForm({
         </div>
       </div>
 
-      {/* РАССТОЯНИЕ ДО ПАССАЖИРА */}
+
 {/* РАССТОЯНИЕ ДО ПАССАЖИРА */}
 <div>
   <label className="block text-sm font-semibold mb-1.5">
@@ -70,18 +74,23 @@ export default function RideForm({
   </label>
 
   <div className="grid grid-cols-2 gap-2">
-
     {/* ВОЗЛЕ МАШИНЫ */}
     <button
       type="button"
-      className="py-2.5 px-2 rounded-xl bg-blue-900 text-white text-sm font-semibold"
+      onClick={() => setPickupDistance("0")}
+      className={`py-2.5 px-2 rounded-xl text-sm font-semibold transition ${
+        pickupDistance === "0"
+          ? "bg-blue-900 text-white"
+          : "bg-gray-100/90 text-gray-700 hover:bg-gray-200"
+      }`}
     >
       Возле машины
     </button>
 
     {/* ВЫБОР РАССТОЯНИЯ */}
     <select
-      defaultValue="100"
+      value={pickupDistance === "0" ? "100" : pickupDistance}
+      onChange={(e) => setPickupDistance(e.target.value)}
       className="w-full py-2.5 px-2 rounded-xl bg-gray-100/90 text-gray-700 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500"
     >
       <option value="100">100 м</option>
@@ -92,7 +101,6 @@ export default function RideForm({
       <option value="5000">5 км</option>
       <option value="10000">10 км</option>
     </select>
-
   </div>
 </div>
 
@@ -174,18 +182,17 @@ export default function RideForm({
       </div>
 
       {/* БАГАЖ */}
-      <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer w-fit">
+{/* БАГАЖ */}
+<label className="flex items-center gap-2 text-sm font-semibold cursor-pointer w-fit">
+  <input
+    type="checkbox"
+    checked={hasLuggageSpace}
+    onChange={(e) => setHasLuggageSpace(e.target.checked)}
+    className="w-4 h-4 accent-blue-900"
+  />
 
-        <input
-          type="checkbox"
-          className="w-4 h-4 accent-blue-900"
-        />
-
-        <span>
-          Есть место для багажа
-        </span>
-
-      </label>
+  <span>Есть место для багажа</span>
+</label>
 
       {/* ПОЛ ВОДИТЕЛЯ */}
       <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer w-fit">
